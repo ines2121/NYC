@@ -34,68 +34,88 @@ from sqlalchemy import create_engine
 engine = create_engine("postgresql://username:password@localhost:5432/nyc_taxi")
 df.to_sql('yellow_2023_01', engine, if_exists='replace', index=False)
 
-## 2. 🤖 Entraînement du Modèle sur Google Colab
+## 2. 🤖 Entraînement du Modèle sur Google Colab (avec PySpark MLlib)
  
 ### 📤 Chargement des données depuis PostgreSQL
 
-- Connexion à PostgreSQL via `sqlalchemy` ou `psycopg2`.
+- Connexion à la base PostgreSQL via `sqlalchemy` ou `psycopg2` depuis Google Colab.
 
-- Charger une ou plusieurs tables :
-
-  - En exécutant une requête SQL avec `UNION`
-
-  - Ou en important chaque table séparément et en les concaténant avec `pandas`
+- Récupération des tables mensuelles ou consolidation de plusieurs tables selon le besoin (via `UNION ALL` en SQL ou concaténation avec `pandas`).
  
 ### 📊 Préparation des données
 
-- Séparer les colonnes explicatives (**features `X`**) et la variable cible (**`y`**).
+- Séparation des colonnes explicatives (features) et de la variable cible.
 
-- Appliquer les transformations nécessaires :
+- Encodage des variables catégorielles.
 
-  - Encodage des variables catégorielles (`OneHotEncoder`, `LabelEncoder`, etc.)
-
-  - Normalisation ou standardisation (`StandardScaler`, `MinMaxScaler`, etc.)
+- Normalisation ou standardisation si nécessaire.
  
-### 🧠 Modélisation
+### 🧠 Modélisation (avec PySpark MLlib)
 
-- Utiliser des bibliothèques comme :
+- Utilisation de **PySpark MLlib**, plus adapté aux grands volumes de données que `scikit-learn`.
 
-  - `scikit-learn` (RandomForest, LinearRegression, etc.)
+- Étapes typiques de la modélisation :
 
-  - `xgboost` pour des modèles plus performants
+  - Encodage des variables catégorielles avec `StringIndexer`
 
-  - `pyspark.ml` si les données sont très volumineuses
+  - Vectorisation des features avec `VectorAssembler`
 
-- Entraîner un modèle sur les données préparées
+  - Entraînement d’un modèle de type `RandomForestRegressor`, `LinearRegression`, ou `GBTRegressor`
 
-- Évaluer les performances à l’aide de métriques :
-
-  - **RMSE** (Root Mean Squared Error)
-
-  - **MAE** (Mean Absolute Error)
-
-  - **R²** (Coefficient de détermination)
+  - Évaluation des performances avec des métriques telles que **RMSE**, **MAE**, ou **R²**
  
 ### 💾 Sauvegarde du modèle
 
-- Sauvegarder le modèle entraîné avec :
+- Le modèle entraîné est sauvegardé localement dans un format standard (`.pkl`, `.onnx` ou format MLlib natif).
 
-  - `joblib.dump(model, "model.pkl")`
-
-  - ou `pickle.dump(model, open("model.pkl", "wb"))`
-
-- Télécharger le fichier `.pkl` depuis Colab pour l’utiliser plus tard (déploiement, test, etc.)
+- Le fichier du modèle est ensuite téléchargé depuis Google Colab pour être utilisé lors du déploiement.
  
 ---
  
-### ✅ Avantages de cette approche
+## 3. ☁️ Déploiement du Modèle sur Google Cloud Platform (GCP)
+ 
+### 🛠️ Méthode de déploiement recommandée
 
-- 🎯 Pipeline **maîtrisé de bout en bout en local**
+- Utilisation de **Cloud Run** pour héberger une API de prédiction légère, basée sur Flask ou FastAPI.
 
-- 📦 **PostgreSQL** pour un **stockage structuré, fiable et performant**
+- Le modèle est chargé depuis le stockage (Drive, GCS ou dossier local dans l’image Docker).
+ 
+### 📦 Étapes générales du déploiement
 
-- 💻 **Google Colab** comme environnement d’entraînement ML **gratuit et simple**
+1. **Préparation de l’API** :
 
-- 🔄 Pipeline **évolutif** vers un déploiement dans le cloud (**GCP**, **AWS**, etc.)
+   - Une API REST est développée (ex. avec Flask) pour recevoir des requêtes de prédiction.
+
+   - L’API charge le modèle au démarrage et renvoie des prédictions à partir des données reçues en JSON.
+ 
+2. **Création d’un conteneur Docker** :
+
+   - Le code + modèle sont empaquetés dans une image Docker.
+
+   - L’image est poussée sur **Google Container Registry** ou **Artifact Registry**.
+ 
+3. **Déploiement sur Cloud Run** :
+
+   - Cloud Run déploie automatiquement l’image et expose une URL publique (ou sécurisée).
+
+   - L’API est alors prête à recevoir des appels HTTP pour servir des prédictions en temps réel.
+ 
+### 🌍 Résultat attendu
+
+- Un modèle entraîné localement avec PySpark est maintenant exposé via une API scalable sur GCP.
+
+- L’architecture reste simple, portable, et compatible avec des intégrations futures (frontend, webhook, automatisation).
+ 
+---
+ 
+## ✅ Avantages de cette architecture hybride
+
+- 💾 Données en local avec PostgreSQL : maîtrise, sécurité, contrôle.
+
+- ⚙️ Entraînement dans Google Colab avec Spark : scalable, gratuit.
+
+- 🌐 Déploiement cloud avec Cloud Run : rapide, maintenable, accessible via API.
+
+- 🔄 Possibilité d’automatiser l’ensemble via des workflows (GitHub Actions, Cloud Build, Airflow...).
 
  
