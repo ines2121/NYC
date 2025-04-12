@@ -1,15 +1,30 @@
-# Données brutes
+# 🚫 Fichiers de données volumineux
 data/
-#/data/nyc_weather_data/
+app/final/
+script-load-data/merged_2024_01.csv
 
+# 💣 Archives lourdes
+spark-3.5.3-bin-hadoop3.tgz
 
-# Fichiers générés
+# 🧪 Environnements et variables sensibles
+.env
+.env.*
+
+# 🧹 Cache et fichiers temporaires Python
 *.pyc
 __pycache__/
 .ipynb_checkpoints/
+*.log
 
-# Archive lourde
-spark-3.5.3-bin-hadoop3.tgz
+# 🗂️ Jupyter outputs
+*.ipynb_checkpoints/
+*.ipynb~*
+*.out
 
-# Environnements
-.env
+# 🧪 VSCode / IDE
+.vscode/
+.idea/
+.DS_Store
+
+# 🔧 Fichiers SQLite (si jamais générés)
+*.sqlite3
