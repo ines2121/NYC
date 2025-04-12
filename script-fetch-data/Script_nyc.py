@@ -8,7 +8,7 @@ def download_yellow_taxi_data(start_year=2023):
     current_month = today.month
  
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    output_dir = os.path.join(base_dir, "nyc_yellow_taxi_parquet")
+    output_dir = os.path.join(base_dir, "data/nyc_yellow_taxi_parquet")
     os.makedirs(output_dir, exist_ok=True)
  
     for year in range(start_year, current_year + 1):

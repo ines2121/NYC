@@ -1,0 +1,6 @@
+pyspark
+psycopg2-binary
+python-dotenv
+notebook
+jupyterlab
+ipykernel

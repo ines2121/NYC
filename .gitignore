@@ -1,1 +1,15 @@
-/nyc_yellow_taxi_parquet/
+# Données brutes
+data/
+#/data/nyc_weather_data/
+
+
+# Fichiers générés
+*.pyc
+__pycache__/
+.ipynb_checkpoints/
+
+# Archive lourde
+spark-3.5.3-bin-hadoop3.tgz
+
+# Environnements
+.env
